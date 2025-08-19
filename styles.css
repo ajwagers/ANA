@@ -1,0 +1,243 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    padding-top: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+header h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin-bottom: 40px;
+    padding: 0 40px;
+    flex-shrink: 0;
+}
+
+.app-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 40px 20px 40px;
+    width: 100%;
+    flex-grow: 1;
+    overflow: hidden;
+    min-height: 0; /* Prevents flexbox from overflowing when children scroll */
+    box-sizing: border-box;
+}
+
+.main-content-area {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 30px;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+#topics-sidebar {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-sidebar {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 0; /* The chat container will provide its own padding */
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-content h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+.sidebar-content p {
+    font-weight: bold;
+    color: #fff;
+}
+
+#topics-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0 0;
+}
+
+#topics-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+    font-size: 0.9rem;
+}
+
+#topics-list li:last-child {
+    border-bottom: none;
+}
+
+.topic-count {
+    background-color: #007bff;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+/* --- Chat Styles --- */
+#chat-container {
+    /* No longer needs top margin/border as it's in its own sidebar */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#chat-messages {
+    flex-grow: 1; /* Takes up available space */
+    overflow-y: auto;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #121212;
+}
+
+.user-message, .bot-message {
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 85%;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+}
+
+.bot-message {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+}
+
+#chat-input-area {
+    display: flex;
+    gap: 10px;
+}
+
+#chat-input {
+    flex-grow: 1;
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#send-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#send-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+#news-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+.article {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.article:hover {
+    transform: translateY(-5px);
+}
+
+.article-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.article-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.article-content h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.article-source {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #a0a0a0;
+    margin: -10px 0 15px 0;
+    font-weight: 500;
+}
+
+.article-content p {
+    flex-grow: 1;
+    line-height: 1.6;
+    color: #b0b0b0;
+}
+
+.article-content a {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    align-self: flex-start;
+    transition: background-color 0.2s;
+}
+
+.article-content a:hover {
+    background-color: #0056b3;
+}
