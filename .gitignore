@@ -1,0 +1,9 @@
+# API keys - DO NOT COMMIT
+config.js
+
+# Node.js
+node_modules/
+
+# IDE files & logs
+.vscode/
+.idea/

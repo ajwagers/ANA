@@ -1,6 +1,6 @@
 # ANA - Astronomy News Aggregator
 
-![ANA Screenshot]("Screenshot 2025-08-19 222859.png")
+![ANA Screenshot](Screenshot%202025-08-19%20222859.png)
 
 ANA is a sleek, modern web application that aggregates astronomy and space exploration news from various sources into a single, easy-to-navigate interface. It features a "glassmorphism" design, topic filtering, real-time search, and an integrated AI chat assistant to help you digest the latest cosmic discoveries.
 
@@ -43,14 +43,12 @@ To run this project locally, follow these steps:
     cd <repository-folder>
     ```
 
-2.  **Add your NewsAPI.org API Key:**
+2.  **Configure your API Key:**
     -   Get a free API key from [NewsAPI.org](https://newsapi.org/).
-    -   Open `script.js` in your code editor.
-    -   Find the line `const NEWS_API_KEY = '...';` and replace the placeholder with your actual key.
-    ```javascript
-    // script.js
-    const NEWS_API_KEY = 'YOUR_API_KEY_HERE';
-    ```
+    -   In the project's root directory, you will find a file named `config.example.js`.
+    -   Rename this file to `config.js`.
+    -   Open `config.js` and replace `'YOUR_API_KEY_HERE'` with your actual NewsAPI.org key.
+    -   The `config.js` file is included in `.gitignore` to prevent your key from being committed to source control.
 
 3.  **Run the application:**
     -   Simply open the `index.html` file in your web browser. No local server is required.

@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- API Configuration ---
-// IMPORTANT: Get your free API key from https://newsapi.org/ and replace 'YOUR_API_KEY'
-const NEWS_API_KEY = 'de1e17c1655841c8a8ddd0952e363ff4'; 
+// The NEWS_API_KEY is loaded from config.js. Make sure to create that file.
 const SPACEFLIGHT_API_URL = 'https://api.spaceflightnewsapi.net/v4/articles/?limit=30';
 const RSS2JSON_API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
@@ -77,7 +76,6 @@ const NEWS_API_KEYWORDS = [
     '"dark matter"', '"james webb"', 'nasa', 'esa', 'spacex', '"artemis program"', 
     '"mars rover"', 'exoplanet', 'supernova', 'observatory', 'hubble'
 ];
-const NEWS_API_URL = `https://newsapi.org/v2/everything?q=(${NEWS_API_KEYWORDS.join(' OR ')})&sortBy=publishedAt&language=en&pageSize=30&apiKey=${NEWS_API_KEY}`;
 
 // --- DOM Elements ---
 const newsContainer = document.getElementById('news-container');
@@ -131,8 +129,8 @@ async function fetchAllNews() {
     } catch (error) {
         console.error("Could not fetch news:", error);
         let errorMessage = '<p style="text-align: center; color: #ff6b6b;">Sorry, we could not load the news at this time. Please try again later.</p>';
-        if (NEWS_API_KEY === 'YOUR_API_KEY') {
-            errorMessage += '<p style="text-align: center; font-size: 0.9rem;">Please make sure to add your NewsAPI.org API key in `script.js`.</p>';
+        if (typeof NEWS_API_KEY === 'undefined' || NEWS_API_KEY === 'YOUR_API_KEY_HERE') {
+            errorMessage += '<p style="text-align: center; font-size: 0.9rem;">Please create a `config.js` file and add your NewsAPI.org API key to enable all news sources.</p>';
         }
         newsContainer.innerHTML = errorMessage;
     }
@@ -154,10 +152,11 @@ async function fetchSpaceflightNews() {
 }
 
 async function fetchNewsApiArticles() {
-    if (!NEWS_API_KEY || NEWS_API_KEY === 'YOUR_API_KEY') {
-        console.warn("NewsAPI key is not set. Skipping fetch from NewsAPI.org.");
+    if (typeof NEWS_API_KEY === 'undefined' || !NEWS_API_KEY || NEWS_API_KEY === 'YOUR_API_KEY_HERE') {
+        console.warn("NewsAPI key is not set or is a placeholder. Skipping fetch from NewsAPI.org.");
         return []; // Return empty array if key is not set
     }
+    const NEWS_API_URL = `https://newsapi.org/v2/everything?q=(${NEWS_API_KEYWORDS.join(' OR ')})&sortBy=publishedAt&language=en&pageSize=30&apiKey=${NEWS_API_KEY}`;
     const response = await fetch(NEWS_API_URL);
     if (!response.ok) throw new Error(`NewsAPI.org error! status: ${response.status}`);
     const data = await response.json();
