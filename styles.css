@@ -1,6 +1,11 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #121212;
+    /* A dark, space-themed background. You can replace this URL with any image you like. */
+    background: #0d0f1a; /* Fallback color */
+    background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
     color: #e0e0e0;
     margin: 0;
     padding-top: 20px;
@@ -12,11 +17,12 @@ body {
 
 header h1 {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     color: #ffffff;
     margin-bottom: 40px;
     padding: 0 40px;
     flex-shrink: 0;
+    text-shadow: 0 0 10px rgba(0, 194, 255, 0.5), 0 0 20px rgba(0, 194, 255, 0.3);
 }
 
 .app-layout {
@@ -42,8 +48,13 @@ header h1 {
 }
 
 #topics-sidebar {
-    background-color: #1e1e1e;
-    border-radius: 8px;
+    /* Glassmorphism effect */
+    background: rgba(20, 20, 30, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
     padding: 20px;
     overflow-y: auto;
     display: flex;
@@ -51,17 +62,48 @@ header h1 {
 }
 
 #chat-sidebar {
-    background-color: #1e1e1e;
-    border-radius: 8px;
+    /* Glassmorphism effect */
+    background: rgba(20, 20, 30, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
     padding: 0; /* The chat container will provide its own padding */
     display: flex;
     flex-direction: column;
+    max-height: 70vh;
+    align-self: start;
+    /* Clip the inner container's corners to match the parent's border-radius */
+    overflow: hidden;
 }
 
 .sidebar-content h2 {
     margin-top: 0;
     border-bottom: 1px solid #444;
     padding-bottom: 10px;
+}
+
+#search-container {
+    margin-bottom: 20px;
+}
+
+#search-input-field {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+#search-input-field:focus {
+    outline: none;
+    border-color: #00c2ff;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .sidebar-content p {
@@ -79,9 +121,25 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #333;
+    padding: 10px 12px;
+    border-bottom: none;
     font-size: 0.9rem;
+    border-radius: 5px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    border: 1px solid transparent;
+}
+
+#topics-list li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#topics-list li.active {
+    background-color: #00c2ff;
+    color: #0d0f1a;
+    font-weight: bold;
+    border-color: rgba(0, 194, 255, 0.5);
 }
 
 #topics-list li:last-child {
@@ -89,12 +147,19 @@ header h1 {
 }
 
 .topic-count {
-    background-color: #007bff;
-    color: #fff;
-    padding: 2px 6px;
+    background-color: rgba(0, 194, 255, 0.2);
+    color: #00c2ff;
+    padding: 2px 8px;
     border-radius: 10px;
     font-size: 0.8rem;
     margin-left: 10px;
+    border: 1px solid rgba(0, 194, 255, 0.4);
+}
+
+#topics-list li.active .topic-count {
+    background-color: #0d0f1a;
+    color: #00c2ff;
+    border-color: #0d0f1a;
 }
 
 /* --- Chat Styles --- */
@@ -103,23 +168,23 @@ header h1 {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #1e1e1e;
+    background-color: transparent;
     border-radius: 8px;
     padding: 20px;
     box-sizing: border-box;
 }
 
 #chat-messages {
-    flex-grow: 1; /* Takes up available space */
+    flex-grow: 1;
     overflow-y: auto;
-    border: 1px solid #333;
+    border: none;
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background-color: #121212;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .user-message, .bot-message {
@@ -131,14 +196,14 @@ header h1 {
 }
 
 .user-message {
-    background-color: #007bff;
-    color: white;
+    background-color: #00c2ff;
+    color: #0d0f1a;
     align-self: flex-end;
     border-bottom-right-radius: 3px;
 }
 
 .bot-message {
-    background-color: #3a3a3a;
+    background-color: rgba(255, 255, 255, 0.15);
     color: #e0e0e0;
     align-self: flex-start;
     border-bottom-left-radius: 3px;
@@ -151,25 +216,34 @@ header h1 {
 
 #chat-input {
     flex-grow: 1;
-    background-color: #333;
-    border: 1px solid #555;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #e0e0e0;
     padding: 10px;
     border-radius: 5px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+#chat-input:focus {
+    outline: none;
+    border-color: #00c2ff;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 #send-button {
-    background-color: #007bff;
-    color: white;
+    background-color: #00c2ff;
+    color: #0d0f1a;
     border: none;
     padding: 0 15px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s;
+    font-weight: bold;
 }
 
 #send-button:disabled {
-    background-color: #555;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(224, 224, 224, 0.5);
     cursor: not-allowed;
 }
 
@@ -180,23 +254,30 @@ header h1 {
 }
 
 .article {
-    background-color: #1e1e1e;
-    border-radius: 8px;
+    /* Glassmorphism for articles */
+    background: rgba(20, 20, 30, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     display: flex;
     flex-direction: column;
 }
 
 .article:hover {
     transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 194, 255, 0.5);
 }
 
 .article-image {
     width: 100%;
     height: 200px;
     object-fit: cover;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle separator */
 }
 
 .article-content {
@@ -208,36 +289,63 @@ header h1 {
 
 .article-content h2 {
     margin-top: 0;
-    font-size: 1.5rem;
-    color: #fff;
+    font-size: 1.4rem; /* Slightly smaller for better fit */
+    color: #ffffff;
+    line-height: 1.3;
 }
 
 .article-source {
-    font-size: 0.9rem;
-    font-style: italic;
-    color: #a0a0a0;
+    font-size: 0.85rem;
+    font-style: normal;
+    color: #00c2ff; /* Use the accent color */
     margin: -10px 0 15px 0;
     font-weight: 500;
+    opacity: 0.8;
 }
 
 .article-content p {
     flex-grow: 1;
     line-height: 1.6;
-    color: #b0b0b0;
+    color: #c0c0d0; /* Lighter grey for better readability */
+    font-size: 0.95rem;
 }
 
-.article-content a {
+.article-content .read-more-btn {
     display: inline-block;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #ffffff;
+    padding: 10px 18px;
+    background-color: rgba(0, 194, 255, 0.15);
+    color: #00c2ff;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 6px;
     margin-top: 15px;
     align-self: flex-start;
-    transition: background-color 0.2s;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: bold;
+    border: 1px solid rgba(0, 194, 255, 0.4);
 }
 
-.article-content a:hover {
-    background-color: #0056b3;
+.article-content .read-more-btn:hover {
+    background-color: #00c2ff;
+    color: #0d0f1a;
+}
+
+/* Custom Scrollbars for a modern look */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+    border: 1px solid #555;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

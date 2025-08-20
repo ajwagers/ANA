@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the application
     fetchAllNews();
+    // Add event listener for search
+    searchInput.addEventListener('input', handleSearch);
 });
 
 // --- API Configuration ---
 // IMPORTANT: Get your free API key from https://newsapi.org/ and replace 'YOUR_API_KEY'
-const NEWS_API_KEY = 'YOUR_API_KEY'; 
+const NEWS_API_KEY = 'de1e17c1655841c8a8ddd0952e363ff4'; 
 const SPACEFLIGHT_API_URL = 'https://api.spaceflightnewsapi.net/v4/articles/?limit=30';
 const RSS2JSON_API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
@@ -22,6 +24,53 @@ const RSS_FEEDS = [
     { name: 'Orbital Index', url: 'https://orbitalindex.com/feed.xml' },
 ];
 
+// --- Topic Extraction Keywords ---
+const TOPIC_KEYWORDS = {
+    'Astrophysics': ['astrophysics', 'theoretical astrophysics', 'quantum cosmology', 'computational astrophysics'],
+    'Observational Astronomy': ['observational astronomy', 'radio astronomy', 'infrared astronomy', 'optical astronomy', 'ultraviolet astronomy', 'x-ray astronomy', 'gamma-ray astronomy'],
+    'Extragalactic Astronomy': ['extragalactic astronomy', 'extragalactic'],
+    'Galactic Astronomy': ['galactic astronomy', 'milky way', 'galaxy structure', 'galactic center'],
+    'Cosmology': ['cosmology', 'big bang', 'cosmic inflation', 'expansion of the universe', 'dark matter', 'dark energy', 'multiverse'],
+    'Relativistic Astrophysics': ['relativistic astrophysics', 'gravitational waves', 'black hole'],
+    'High Energy Astrophysics': ['high energy astrophysics', 'gamma ray bursts', 'active galactic nuclei'],
+    'Stellar Astronomy': ['stellar astronomy', 'star formation', 'stellar evolution', 'supernova', 'nova', 'hypernova'],
+    'Compact Objects': ['white dwarf', 'neutron star', 'black hole', 'magnetar', 'strange star'],
+    'Planetary Science': ['planetary science', 'planet', 'moon', 'planetary system', 'planetary exploration'],
+    'Exoplanets': ['exoplanet', 'extrasolar planet', 'habitability', 'exoplanet discovery', 'biosignatures'],
+    'Planetary Rings': ['planetary rings', 'magnetosphere'],
+    'Small Solar System Bodies': ['asteroid', 'comet', 'kuiper belt', 'oort cloud'],
+    'Space Missions': ['space mission', 'nasa', 'esa', 'spacex', 'rover', 'spacecraft', 'artemis', 'sls', 'orion', 'starship', 'falcon 9'],
+    'Stars': ['star', 'red giant', 'brown dwarf', 'white dwarf', 'neutron star', 'pulsar'],
+    'Nebulae': ['nebula', 'emission nebula', 'reflection nebula', 'planetary nebula', 'supernova remnant'],
+    'Galaxies': ['galaxy', 'galaxies', 'spiral galaxy', 'elliptical galaxy', 'irregular galaxy', 'andromeda', 'milky way'],
+    'Star Clusters': ['star cluster', 'globular cluster', 'open cluster'],
+    'Cosmic Microwave Background': ['cosmic microwave background', 'cmb'],
+    'Compact Objects': ['white dwarf', 'neutron star', 'black hole'],
+    'Supernovae': ['supernova', 'nova', 'hypernova'],
+    'Gamma Ray Bursts': ['gamma ray burst', 'grb'],
+    'Large Scale Structure': ['galaxy cluster', 'filament', 'void', 'supercluster'],
+    'Astrometry': ['astrometry', 'stellar motion', 'orbit determination'],
+    'Photometry': ['photometry', 'light measurement'],
+    'Spectroscopy': ['spectroscopy', 'spectral analysis'],
+    'Gravitational Waves': ['gravitational waves', 'gw'],
+    'Cosmic Rays': ['cosmic ray', 'high energy particle'],
+    'Neutrino Astronomy': ['neutrino astronomy', 'neutrino detection'],
+    'Astrobiology': ['astrobiology', 'origin of life', 'life in space', 'biosignatures'],
+    'Astrochemistry': ['astrochemistry', 'chemical processes in space'],
+    'Plasma Astrophysics': ['plasma astrophysics', 'cosmic plasma'],
+    'Interstellar Medium': ['interstellar medium', 'ism', 'intergalactic medium'],
+    'Archaeoastronomy': ['archaeoastronomy', 'ancient astronomy'],
+    'Atmospheric Science': ['planetary atmosphere', 'atmosphere'],
+    'Space Weather': ['space weather', 'solar wind', 'solar activity', 'geomagnetic storm'],
+    'Aerospace Engineering': ['aerospace engineering', 'rockets', 'spacecraft engineering'],
+    'Astronomy History': ['astronomy history', 'historical astronomy'],
+    'Space Law': ['space law', 'space treaties', 'outer space treaty'],
+    'Space Commercialization': ['space commercialization', 'space industry', 'space tourism'],
+    'Space Debris': ['space debris', 'orbital debris', 'space junk'],
+    'Ethics in Space': ['space ethics', 'philosophy of space exploration'],
+    'International Cooperation': ['international space cooperation', 'space agencies', 'nasa', 'esa', 'roscosmos', 'isro', 'cnsa']
+};
+
 // A selection of keywords for NewsAPI.org. The query is limited to 500 characters.
 const NEWS_API_KEYWORDS = [
     'astronomy', 'astrophysics', 'cosmology', 'galaxy', 'nebula', '"black hole"', 
@@ -34,6 +83,7 @@ const NEWS_API_URL = `https://newsapi.org/v2/everything?q=(${NEWS_API_KEYWORDS.j
 const newsContainer = document.getElementById('news-container');
 const topicsList = document.getElementById('topics-list');
 const totalArticlesSpan = document.getElementById('total-articles');
+const searchInput = document.getElementById('search-input-field');
 const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
@@ -41,8 +91,8 @@ const sendButton = document.getElementById('send-button');
 // --- Application State ---
 const state = {
     allArticles: [],
-    filteredArticles: [],
     currentFilter: null,
+    currentSearchTerm: '',
 };
 
 async function fetchAllNews() {
@@ -75,7 +125,7 @@ async function fetchAllNews() {
         uniqueArticles.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
 
         state.allArticles = uniqueArticles;
-        displayNews(state.allArticles);
+        applyFiltersAndSearch();
         updateSidebar(state.allArticles);
 
     } catch (error) {
@@ -165,36 +215,122 @@ function displayNews(articles) {
                 <h2>${article.title}</h2>
                 <p class="article-source">Source: ${article.news_site}</p>
                 <p>${article.summary}</p>
-                <a href="${article.url}" target="_blank" rel="noopener noreferrer">Read More</a>
+                <a href="${article.url}" class="read-more-btn" target="_blank" rel="noopener noreferrer">Read More</a>
             </div>
         `;
         newsContainer.appendChild(articleElement);
     });
 }
 
+/**
+ * Extracts relevant topics from an article's title and summary based on a predefined keyword list.
+ * @param {object} article The article object.
+ * @returns {string[]} An array of topics found in the article.
+ */
+function extractTopicsFromArticle(article) {
+    const topics = new Set();
+    const textToSearch = `${article.title.toLowerCase()} ${article.summary.toLowerCase()}`;
+
+    for (const [topic, keywords] of Object.entries(TOPIC_KEYWORDS)) {
+        for (const keyword of keywords) {
+            if (textToSearch.includes(keyword)) {
+                topics.add(topic);
+                break; // Found a keyword for this topic, move to the next topic
+            }
+        }
+    }
+    return Array.from(topics);
+}
+
 function updateSidebar(articles) {
     totalArticlesSpan.textContent = articles.length;
 
     const topicCounts = articles.reduce((acc, article) => {
-        // Sanitize news site name to prevent issues
-        const topic = article.news_site.replace(/ \.com$/, '');
-        acc[topic] = (acc[topic] || 0) + 1;
+        const topics = extractTopicsFromArticle(article);
+        topics.forEach(topic => {
+            acc[topic] = (acc[topic] || 0) + 1;
+        });
         return acc;
     }, {});
 
     topicsList.innerHTML = '';
 
-    // Sort topics by count in descending order
-    const sortedTopics = Object.entries(topicCounts).sort(([, countA], [, countB]) => countB - countA);
+    // --- Add a "Show All" option ---
+    const showAllItem = document.createElement('li');
+    showAllItem.classList.add('topic-item', 'active'); // Active by default
+    showAllItem.innerHTML = `
+        <span class="topic-name">All Topics</span>
+        <span class="topic-count">${articles.length}</span>
+    `;
+    showAllItem.addEventListener('click', handleFilterClick);
+    topicsList.appendChild(showAllItem);
 
-    sortedTopics.forEach(([topic, count]) => {
+    // Sort topics by count in descending order and take the top 10
+    const sortedTopics = Object.entries(topicCounts).sort(([, countA], [, countB]) => countB - countA);
+    const topTopics = sortedTopics.slice(0, 10);
+
+    topTopics.forEach(([topic, count]) => {
         const listItem = document.createElement('li');
+        listItem.classList.add('topic-item');
+        listItem.dataset.topic = topic; // Use data attribute to store the topic
         listItem.innerHTML = `
             <span class="topic-name">${topic}</span>
             <span class="topic-count">${count}</span>
         `;
+        listItem.addEventListener('click', handleFilterClick);
         topicsList.appendChild(listItem);
     });
+}
+
+/**
+ * Handles clicks on topic filters in the sidebar.
+ * @param {MouseEvent} event The click event.
+ */
+function handleFilterClick(event) {
+    const clickedElement = event.currentTarget;
+    const topic = clickedElement.dataset.topic; // Will be undefined for "All Topics"
+
+    // Update active class on the list items
+    document.querySelectorAll('#topics-list .topic-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    clickedElement.classList.add('active');
+
+    // Update state and apply filters
+    state.currentFilter = topic || null;
+
+    // Clear search when changing topics for a cleaner UX
+    searchInput.value = '';
+    state.currentSearchTerm = '';
+
+    applyFiltersAndSearch();
+}
+
+function handleSearch(event) {
+    state.currentSearchTerm = event.target.value;
+    applyFiltersAndSearch();
+}
+
+function applyFiltersAndSearch() {
+    let articlesToDisplay = state.allArticles;
+
+    // 1. Apply topic filter
+    if (state.currentFilter) {
+        articlesToDisplay = articlesToDisplay.filter(article =>
+            extractTopicsFromArticle(article).includes(state.currentFilter)
+        );
+    }
+
+    // 2. Apply search filter
+    const searchTerm = state.currentSearchTerm.toLowerCase().trim();
+    if (searchTerm) {
+        articlesToDisplay = articlesToDisplay.filter(article =>
+            article.title.toLowerCase().includes(searchTerm) ||
+            article.summary.toLowerCase().includes(searchTerm)
+        );
+    }
+
+    displayNews(articlesToDisplay);
 }
 
 /**
@@ -254,7 +390,7 @@ function addChatMessage(message, sender) {
 
 async function queryOllama(userInput, botMessageElement) {
     const OLLAMA_URL = 'http://localhost:11434/api/chat';
-    const OLLAMA_MODEL = 'llama3'; // Or 'mistral', 'gemma', etc.
+    const OLLAMA_MODEL = 'llama3.1'; // Or 'mistral', 'gemma', etc.
 
     const articleContext = state.allArticles.map(article => {
         return `Source: ${article.news_site}\nTitle: ${article.title}\nSummary: ${article.summary}`;
